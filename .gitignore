@@ -27,3 +27,16 @@ override.tf.json
 
 # Include tfplan files to ignore the plan output of command: terraform plan -out=tfplan
 # example: *tfplan*
+
+# Terraform backend configuration files (as per the Terraform authors suggested naming convention,
+# https://developer.hashicorp.com/terraform/language/settings/backends/configuration#file).
+*.tfbackend
+
+# Variables' values.
+*.tfvars
+
+# IntelliJ.
+**/.idea/*
+
+# A matter of preference/flow. For me, sharing my code in public, it makes sense not to add the file to the repo.
+.terraform.lock.hcl
