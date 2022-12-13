@@ -31,5 +31,9 @@ This is a basic multi-region Cloud Run setup in Terraform. Based on:
    - Initialize the remote Terraform backend, migrating the local state there: `terraform init -backend-config=gcs.tfbackend -migrate-state`
 
 #### 2. Cloud Run setup:
-   - Create all the things: `terraform apply`.
-   - TODO: observe how a region-specific CR instance serves the traffic.
+- In `terraform.tfvars` specify values for:
+  - `var.cloudrun_regions`
+  - `var.cloudrun_domain_name`
+  - `var.cloudrun_image`
+- Create all the things: `terraform apply`.
+- TODO: observe how a region-specific CR instance serves the traffic.
