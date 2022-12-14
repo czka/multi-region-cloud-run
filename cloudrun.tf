@@ -1,9 +1,11 @@
+#TODO: Rename "run_default" resource to something meaningful.
+#TODO: Revise `name`s.
+
 resource "google_cloud_run_service" "run_default" {
 #  provider = google-beta
-  #TODO: Switch to for_each?
-  count    = length(var.cloudrun_regions)
-  name     = "cloudrun-app-${var.cloudrun_regions[count.index]}"
-  location = var.cloudrun_regions[count.index]
+  for_each = toset(var.cloudrun_regions)
+  name     = "cloudrun-app-${each.value}"
+  location = each.value
 
   template {
     spec {
@@ -26,9 +28,11 @@ resource "google_cloud_run_service" "run_default" {
 
 resource "google_cloud_run_service_iam_member" "run_allow_unauthenticated" {
 #  provider = google-beta
-  count    = length(var.cloudrun_regions)
-  location = google_cloud_run_service.run_default[count.index].location
-  service  = google_cloud_run_service.run_default[count.index].name
+  for_each = toset(var.cloudrun_regions)
+  location = google_cloud_run_service.run_default[each.value].location
+  service  = google_cloud_run_service.run_default[each.value].name
   role     = "roles/run.invoker"
   member   = "allUsers"
 }
+
+#TODO: Mix a CDN backend bucket in.

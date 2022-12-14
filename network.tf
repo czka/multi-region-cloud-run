@@ -1,4 +1,6 @@
 #TODO: Change all "lb_default" resource names to something meaningful.
+#TODO: Change "myservice*" `name`s as well.
+#TODO: Revise `name`s.
 
 resource "google_compute_global_address" "lb_default" {
 #  provider = google-beta
@@ -12,12 +14,12 @@ resource "google_compute_global_address" "lb_default" {
 
 resource "google_compute_region_network_endpoint_group" "lb_default" {
 #  provider              = google-beta
-  count                 = length(var.cloudrun_regions)
+  for_each              = toset(var.cloudrun_regions)
   name                  = "cloudrun-neg"
   network_endpoint_type = "SERVERLESS"
-  region                = var.cloudrun_regions[count.index]
+  region                = each.value
   cloud_run {
-    service = google_cloud_run_service.run_default[count.index].name
+    service = google_cloud_run_service.run_default[each.value].name
   }
 }
 
@@ -26,17 +28,13 @@ resource "google_compute_backend_service" "lb_default" {
   name                  = "cloudrun-backend"
   load_balancing_scheme = "EXTERNAL_MANAGED"
 
-  #TODO: Looks like this assumes only 2 regions can be specified. What if there are 3?
-  backend {
-    balancing_mode  = "UTILIZATION"
-    capacity_scaler = 0.85
-    group           = google_compute_region_network_endpoint_group.lb_default[0].id
-  }
-
-  backend {
-    balancing_mode  = "UTILIZATION"
-    capacity_scaler = 0.85
-    group           = google_compute_region_network_endpoint_group.lb_default[1].id
+  dynamic "backend" {
+    for_each = toset(var.cloudrun_regions)
+    content {
+      balancing_mode  = "UTILIZATION"
+      capacity_scaler = 0.85
+      group           = google_compute_region_network_endpoint_group.lb_default[backend.value].id
+    }
   }
 
   # Use an explicit depends_on clause to wait until API is enabled
