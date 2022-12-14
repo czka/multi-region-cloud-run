@@ -3,7 +3,7 @@
 #TODO: Revise `name`s.
 
 resource "google_compute_global_address" "lb_default" {
-  name     = "cloudrun-ip"
+  name = "cloudrun-ip"
 
   # Use an explicit depends_on clause to wait until API is enabled
   depends_on = [
@@ -58,7 +58,7 @@ resource "google_compute_url_map" "lb_default" {
 }
 
 resource "google_compute_url_map" "https_default" {
-  name     = "myservice-https-urlmap"
+  name = "myservice-https-urlmap"
 
   default_url_redirect {
     redirect_response_code = "MOVED_PERMANENTLY_DEFAULT"
@@ -68,7 +68,7 @@ resource "google_compute_url_map" "https_default" {
 }
 
 resource "google_compute_managed_ssl_certificate" "lb_default" {
-  name     = "myservice-ssl-cert"
+  name = "myservice-ssl-cert"
 
   managed {
     domains = [var.cloudrun_domain_name]
@@ -76,8 +76,8 @@ resource "google_compute_managed_ssl_certificate" "lb_default" {
 }
 
 resource "google_compute_target_https_proxy" "lb_default" {
-  name     = "myservice-https-proxy"
-  url_map  = google_compute_url_map.lb_default.id
+  name    = "myservice-https-proxy"
+  url_map = google_compute_url_map.lb_default.id
   ssl_certificates = [
     google_compute_managed_ssl_certificate.lb_default.name
   ]
@@ -87,8 +87,8 @@ resource "google_compute_target_https_proxy" "lb_default" {
 }
 
 resource "google_compute_target_http_proxy" "https_default" {
-  name     = "myservice-http-proxy"
-  url_map  = google_compute_url_map.https_default.id
+  name    = "myservice-http-proxy"
+  url_map = google_compute_url_map.https_default.id
 
   depends_on = [
     google_compute_url_map.https_default
