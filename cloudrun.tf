@@ -2,7 +2,6 @@
 #TODO: Revise `name`s.
 
 resource "google_cloud_run_service" "run_default" {
-#  provider = google-beta
   for_each = toset(var.cloudrun_regions)
   name     = "cloudrun-app-${each.value}"
   location = each.value
@@ -27,7 +26,6 @@ resource "google_cloud_run_service" "run_default" {
 }
 
 resource "google_cloud_run_service_iam_member" "run_allow_unauthenticated" {
-#  provider = google-beta
   for_each = toset(var.cloudrun_regions)
   location = google_cloud_run_service.run_default[each.value].location
   service  = google_cloud_run_service.run_default[each.value].name

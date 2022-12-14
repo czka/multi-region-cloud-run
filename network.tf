@@ -3,7 +3,6 @@
 #TODO: Revise `name`s.
 
 resource "google_compute_global_address" "lb_default" {
-#  provider = google-beta
   name     = "cloudrun-ip"
 
   # Use an explicit depends_on clause to wait until API is enabled
@@ -13,7 +12,6 @@ resource "google_compute_global_address" "lb_default" {
 }
 
 resource "google_compute_region_network_endpoint_group" "lb_default" {
-#  provider              = google-beta
   for_each              = toset(var.cloudrun_regions)
   name                  = "cloudrun-neg"
   network_endpoint_type = "SERVERLESS"
@@ -24,7 +22,6 @@ resource "google_compute_region_network_endpoint_group" "lb_default" {
 }
 
 resource "google_compute_backend_service" "lb_default" {
-#  provider              = google-beta
   name                  = "cloudrun-backend"
   load_balancing_scheme = "EXTERNAL_MANAGED"
 
@@ -44,7 +41,6 @@ resource "google_compute_backend_service" "lb_default" {
 }
 
 resource "google_compute_url_map" "lb_default" {
-#  provider        = google-beta
   name            = "myservice-lb-urlmap"
   default_service = google_compute_backend_service.lb_default.id
 
@@ -62,7 +58,6 @@ resource "google_compute_url_map" "lb_default" {
 }
 
 resource "google_compute_url_map" "https_default" {
-#  provider = google-beta
   name     = "myservice-https-urlmap"
 
   default_url_redirect {
@@ -73,7 +68,6 @@ resource "google_compute_url_map" "https_default" {
 }
 
 resource "google_compute_managed_ssl_certificate" "lb_default" {
-#  provider = google-beta
   name     = "myservice-ssl-cert"
 
   managed {
@@ -82,7 +76,6 @@ resource "google_compute_managed_ssl_certificate" "lb_default" {
 }
 
 resource "google_compute_target_https_proxy" "lb_default" {
-#  provider = google-beta
   name     = "myservice-https-proxy"
   url_map  = google_compute_url_map.lb_default.id
   ssl_certificates = [
@@ -94,7 +87,6 @@ resource "google_compute_target_https_proxy" "lb_default" {
 }
 
 resource "google_compute_target_http_proxy" "https_default" {
-#  provider = google-beta
   name     = "myservice-http-proxy"
   url_map  = google_compute_url_map.https_default.id
 
@@ -104,7 +96,6 @@ resource "google_compute_target_http_proxy" "https_default" {
 }
 
 resource "google_compute_global_forwarding_rule" "lb_default" {
-#  provider              = google-beta
   name                  = "myservice-lb-fr"
   load_balancing_scheme = "EXTERNAL_MANAGED"
   target                = google_compute_target_https_proxy.lb_default.id
@@ -114,7 +105,6 @@ resource "google_compute_global_forwarding_rule" "lb_default" {
 }
 
 resource "google_compute_global_forwarding_rule" "https_default" {
-#  provider   = google-beta
   name       = "myservice-https-fr"
   target     = google_compute_target_http_proxy.https_default.id
   ip_address = google_compute_global_address.lb_default.id
